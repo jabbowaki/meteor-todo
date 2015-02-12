@@ -29,7 +29,9 @@ if (Meteor.isClient) {
     // console.log(text)
     Tasks.insert({
       text: text,
-      createdAt: new Date()
+      createdAt: new Date(),
+      owner: Meteor.userId(),
+      username: Meteor.user().username
     });
     //clears form
     event.target.text.value = "";
@@ -52,4 +54,7 @@ Template.task.events({
     Tasks.remove(this._id);
   }
 });
+  Accounts.ui.config({
+    passwordSignupFields: "USERNAME_ONLY"
+  });
 }
