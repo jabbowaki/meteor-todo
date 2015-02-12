@@ -26,4 +26,15 @@ if (Meteor.isClient) {
     return false;
   }
 });
+
+Template.task.events({
+  "click .toggle-checked": function(){
+    //this._id gets the unique task
+    //$set toggles the checked field
+    Tasks.update(this._id, {$set: {checked: ! this.checked}});
+  },
+  "click .delete": function(){
+    Tasks.remove(this._id);
+  }
+});
 }
