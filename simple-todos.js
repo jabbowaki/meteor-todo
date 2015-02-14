@@ -27,12 +27,7 @@ if (Meteor.isClient) {
     var text = event.target.text.value;
     // console.log(event)
     // console.log(text)
-    Tasks.insert({
-      text: text,
-      createdAt: new Date(),
-      owner: Meteor.userId(),
-      username: Meteor.user().username
-    });
+      Meteor.call("addTask", text);
     //clears form
     event.target.text.value = "";
     //Prevent default form submit
@@ -48,13 +43,34 @@ Template.task.events({
   "click .toggle-checked": function(){
     //this._id gets the unique task
     //$set toggles the checked field
-    Tasks.update(this._id, {$set: {checked: ! this.checked}});
+    Meteor.call("setChecked", this._id, ! this.checked);
   },
   "click .delete": function(){
-    Tasks.remove(this._id);
+    Meteor.call("deleteTask", this._id);
   }
 });
   Accounts.ui.config({
     passwordSignupFields: "USERNAME_ONLY"
   });
 }
+
+Meteor.methods({
+  addTask: function(text) {
+    if (! Meteor.userId()){
+      throw new Meteor.Error("not-authorized");
+    }
+
+    Tasks.insert({
+      text: text,
+      createdAt: new Date(),
+      owner: Meteor.userId(),
+      username: Meteor.user().username
+    });
+  },
+  deleteTask: function (taskId){
+    Tasks.remove(taskId);
+  },
+  setChecked: function (taskId, setChecked){
+    Tasks.update(taskId, {$set: {checked: setChecked} });
+  }
+})
